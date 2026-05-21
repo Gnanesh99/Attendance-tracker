@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Dashboard</h1>
+    <h2>Welcome, {{ user.username }}!</h2>
+    {% if existing %}
+        <p>Today's Status: {{ existing.status }}</p>
+    {% else %}
+        <form action="/mark" method="POST">
+        <button type="submit" name="status" value="present">Present</button>
+        <button type="submit" name="status" value="absent">Absent</button>
+        <button type="submit" name="status" value="late">Late</button>
+        </form>
+    {% endif %}
+    <h3>Attendance Records</h3>
+    <table>
+        <tr><th>Date</th><th>Status</th></tr>
+        {% for record in records %}
+            <tr><td>{{ record.date }}</td><td>{{ record.status }}</td></tr>
+        {% endfor %}
+    </table>
+    <h3>Your Attendance Percentage - {{percentage}}</h3>
+{% endblock %}
