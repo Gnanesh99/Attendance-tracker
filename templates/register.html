@@ -1,14 +1,46 @@
 {% extends "base.html" %}
+{% block title %}Create account | Attendly{% endblock %}
+{% block body_class %}auth-page{% endblock %}
 
 {% block content %}
-    <h2>Register!</h2>
-    <form action="/register" method="post">
-        <input type="text" name="username" placeholder="Username"><br>
-        <input type="email" name="email" placeholder="Email"><br>
-        <input type="password" name="password" placeholder="Password"><br>
-        <button type="submit">Register</button>
-    </form>
-    {% if error%}
-        <p>{{error}}</p>
-    {% endif %}
+<section class="auth-layout">
+    <div class="auth-intro">
+        <span class="eyebrow">Build a better habit</span>
+        <h1>Every day counts.<br><span>Make yours visible.</span></h1>
+        <p>Create your account and start building a clear, reliable record of your attendance.</p>
+        <div class="mini-stat">
+            <span class="mini-stat-icon" aria-hidden="true">&#8599;</span>
+            <div><strong>See your progress</strong><small>Your percentage updates with every check-in.</small></div>
+        </div>
+    </div>
+
+    <div class="auth-card">
+        <div class="card-heading">
+            <span class="eyebrow">Get started</span>
+            <h2>Create your account</h2>
+            <p>It only takes a moment to set up your profile.</p>
+        </div>
+
+        {% if error %}
+            <div class="alert alert-error" role="alert"><span aria-hidden="true">!</span>{{ error }}</div>
+        {% endif %}
+
+        <form action="{{ url_for('auth.register') }}" method="post" class="form-stack">
+            <div class="field-group">
+                <label for="username">Full name</label>
+                <input id="username" type="text" name="username" placeholder="Your name" autocomplete="name" required>
+            </div>
+            <div class="field-group">
+                <label for="email">Email address</label>
+                <input id="email" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+            </div>
+            <div class="field-group">
+                <label for="password">Password</label>
+                <input id="password" type="password" name="password" placeholder="Create a password" autocomplete="new-password" minlength="6" required>
+            </div>
+            <button class="button button-primary button-full" type="submit">Create account <span aria-hidden="true">&rarr;</span></button>
+        </form>
+        <p class="auth-switch">Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></p>
+    </div>
+</section>
 {% endblock %}

@@ -1,23 +1,86 @@
 {% extends "base.html" %}
+{% block title %}Dashboard | Attendly{% endblock %}
+{% block body_class %}dashboard-page{% endblock %}
 
 {% block content %}
-    <h1>Dashboard</h1>
-    <h2>Welcome, {{ user.username }}!</h2>
-    {% if existing %}
-        <p>Today's Status: {{ existing.status }}</p>
+<section class="dashboard-header">
+    <div>
+        <span class="eyebrow">Your workspace</span>
+        <h1>Good to see you, {{ user.username }}.</h1>
+        <p>Here is your attendance overview and today&rsquo;s check-in.</p>
+    </div>
+    <div class="date-chip">
+        <span class="date-icon" aria-hidden="true">&#9633;</span>
+        <div><small>Today</small><strong>{{ today.strftime('%B %d, %Y') if today else 'Current day' }}</strong></div>
+    </div>
+</section>
+
+{% if error %}
+    <div class="alert alert-error dashboard-alert" role="alert"><span aria-hidden="true">!</span>{{ error }}</div>
+{% endif %}
+
+<section class="overview-grid">
+    <article class="stat-card stat-card-primary">
+        <div class="stat-top"><span>Attendance score</span><span class="stat-icon">%</span></div>
+        <div class="stat-value">{{ percentage }}<small>%</small></div>
+        <div class="progress-track"><span style="width: {{ percentage }}%"></span></div>
+        <p>{% if percentage >= 75 %}You are maintaining a strong record.{% elif records %}Keep checking in to improve your score.{% else %}Your progress starts with the first check-in.{% endif %}</p>
+    </article>
+
+    <article class="checkin-card">
+        <div class="checkin-copy">
+            <span class="eyebrow">Today&rsquo;s check-in</span>
+            {% if existing %}
+                <h2>You&rsquo;re all set for today.</h2>
+                <p>Your attendance has been recorded. Come back tomorrow to keep your streak going.</p>
+            {% else %}
+                <h2>How are you arriving today?</h2>
+                <p>Choose your current status. You can check in once each day.</p>
+            {% endif %}
+        </div>
+
+        {% if existing %}
+            <div class="current-status status-{{ existing.status }}">
+                <span class="status-dot"></span>
+                <div><small>Recorded as</small><strong>{{ existing.status|capitalize }}</strong></div>
+                <span class="status-check" aria-hidden="true">&#10003;</span>
+            </div>
+        {% else %}
+            <form action="{{ url_for('attendance.mark_attendance') }}" method="post" class="status-actions">
+                <button class="status-button status-present" type="submit" name="status" value="present"><span>&#10003;</span><strong>Present</strong><small>On time and ready</small></button>
+                <button class="status-button status-late" type="submit" name="status" value="late"><span>&#9719;</span><strong>Late</strong><small>Arriving after time</small></button>
+                <button class="status-button status-absent" type="submit" name="status" value="absent"><span>&times;</span><strong>Absent</strong><small>Unable to attend</small></button>
+            </form>
+        {% endif %}
+    </article>
+</section>
+
+<section class="records-card">
+    <div class="section-heading">
+        <div><span class="eyebrow">Recent activity</span><h2>Attendance history</h2></div>
+        <span class="record-count">{{ records|length }} record{% if records|length != 1 %}s{% endif %}</span>
+    </div>
+
+    {% if records %}
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Date</th><th>Status</th></tr></thead>
+                <tbody>
+                    {% for record in records %}
+                        <tr>
+                            <td><strong>{{ record.date.strftime('%b %d, %Y') }}</strong></td>
+                            <td><span class="badge badge-{{ record.status }}"><span></span>{{ record.status|capitalize }}</span></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
-        <form action="/mark" method="POST">
-        <button type="submit" name="status" value="present">Present</button>
-        <button type="submit" name="status" value="absent">Absent</button>
-        <button type="submit" name="status" value="late">Late</button>
-        </form>
+        <div class="empty-state">
+            <span class="empty-icon" aria-hidden="true">&#8635;</span>
+            <h3>No attendance records yet</h3>
+            <p>Mark today&rsquo;s status and your history will appear here.</p>
+        </div>
     {% endif %}
-    <h3>Attendance Records</h3>
-    <table>
-        <tr><th>Date</th><th>Status</th></tr>
-        {% for record in records %}
-            <tr><td>{{ record.date }}</td><td>{{ record.status }}</td></tr>
-        {% endfor %}
-    </table>
-    <h3>Your Attendance Percentage - {{percentage}}</h3>
+</section>
 {% endblock %}
