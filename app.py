@@ -9,8 +9,8 @@ load_dotenv()
 
 #APP DECLARATION AND CONFIGURATION OF SECRET KEY AND DATABASE TO FLASK
 app = Flask(__name__)
-app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "change-this-secret")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///users.db")
 
 #INITIALIZING DB AND BCRYPT
 db.init_app(app)
@@ -31,4 +31,4 @@ app.register_blueprint(auth)
 
 #RUN THE APP
 if __name__=="__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=False)
