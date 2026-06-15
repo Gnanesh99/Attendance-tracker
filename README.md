@@ -107,6 +107,10 @@ Visit `http://127.0.0.1:5000`
 | POST | `/login` | Authenticate user |
 | GET | `/logout` | Logout user |
 
+## Live Demo:
+
+https://attendance-tracker-13pq.onrender.com
+
 ## Author
 
 Gorle Gnanesh
